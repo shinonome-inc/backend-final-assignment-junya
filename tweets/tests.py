@@ -4,11 +4,14 @@ from django.urls import reverse
 
 
 class TestHomeView(TestCase):
-    def test_success_get(self):
-        user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="Hp9My5mi"
+    def setUp(self):
+        self.url = reverse("tweets:home")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword"
         )
-        self.client.force_login(user)
+        self.client.login(username="testuser", password="testpassword")
+
+    def test_success_get(self):
         response = self.client.get(reverse("tweets:home"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "tweets/home.html")

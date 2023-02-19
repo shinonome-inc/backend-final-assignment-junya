@@ -1,8 +1,8 @@
 from accounts.forms import User
+from django.conf import settings
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase
 from django.urls import reverse
-from mysite import settings
 
 
 class TestSignUpView(TestCase):
@@ -270,8 +270,8 @@ class TestLogoutView(TestCase):
         )
         self.client.login(username="testuser", password="testpassword")
 
-    def test_success_get(self):
-        response = self.client.get(reverse("accounts:logout"))
+    def test_success_post(self):
+        response = self.client.post(reverse("accounts:logout"))
         self.assertRedirects(
             response,
             reverse(settings.LOGOUT_REDIRECT_URL),

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -13,7 +14,7 @@ class UserSignUpView(CreateView):
     model = User
     form_class = SignupForm
     template_name = "accounts/signup.html"
-    success_url = reverse_lazy("tweets:home")
+    success_url = reverse_lazy(settings.LOGIN_REDIRECT_URL)
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -31,7 +32,7 @@ class UserLoginView(LoginView):
 
 
 class UserLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = "accounts/logout.html"
+    pass
 
 
 class UserProfileView(LoginRequiredMixin, DetailView):
