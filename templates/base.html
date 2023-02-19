@@ -12,10 +12,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <title>{% block title %}{% endblock title %} |ホーム</title>
+    <title>{% block title %}{% endblock title %}</title>
 </head>
 
 <body>
+    <header>
+        <a class="navbar-brand" href="{% url 'tweets:home' %}">Twitter Clone</a>
+        {% if user.is_authenticated %}
+        <a class="navbar-brand" href="{% url 'tweets:home' %}">Home</a>
+        <a class="navbar-brand" href="{% url 'accounts:user_profile' user.username %}">user_profile</a>
+        <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        {% else %}
+        <a class="navbar-brand" href="{% url 'accounts:login' %}">Login</a>
+        <a class="navbar-brand" href="{% url 'accounts:signup' %}">Sign up</a>
+        {% endif %}
+    </header>
     {% block content %}{% endblock content %}
 </body>
 

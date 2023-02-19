@@ -1,44 +1,38 @@
-from django.test import TestCase
-from django.urls import reverse_lazy
-
 from accounts.forms import User
-from mysite.settings import LOGIN_REDIRECT_URL
+from django.conf import settings
+from django.contrib.auth import SESSION_KEY
+from django.test import TestCase
+from django.urls import reverse
 
 
 class TestSignUpView(TestCase):
     def setUp(self):
-        self.url = reverse_lazy("accounts:signup")
+        self.url = reverse("accounts:signup")
 
     def test_success_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_success_post(self):
-        test_data = {
+        data = {
             "username": "testuser",
             "email": "test@example.com",
             "password1": "testpassword",
             "password2": "testpassword",
         }
-
-        response = self.client.post(self.url, test_data)
-        self.assertEqual(response.status_code, 302)
-
+        response = self.client.post(self.url, data=data)
         self.assertRedirects(
             response,
-            reverse_lazy(LOGIN_REDIRECT_URL),
+            reverse(settings.LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
+            )
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(
+            User.objects.filter(username="testuser", email="test@example.com").count(),
+            1,
         )
-
-        self.assertTrue(
-            User.objects.filter(
-                username=test_data["username"],
-                email=test_data["email"],
-            ).exists()
-        )
+        self.assertIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_empty_form(self):
         empty_data = {
@@ -211,32 +205,80 @@ class TestSignUpView(TestCase):
         self.assertEqual(User.objects.count(), 0)
 
 
-class TestHomeView(TestCase):
+class TestLoginView(TestCase):
     def setUp(self):
-        self.url = reverse_lazy("accounts:home")
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.url = reverse("accounts:login")
 
     def test_success_get(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-
-class TestLoginView(TestCase):
-    def test_success_get(self):
-        pass
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/login.html")
 
     def test_success_post(self):
-        pass
+        data = {"username": "testuser", "password": "testpassword"}
+        response = self.client.post(self.url, data)
+        self.assertRedirects(
+            response,
+            reverse(settings.LOGIN_REDIRECT_URL),
+            status_code=302,
+            target_status_code=200,
+        )
+        self.assertIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_not_exists_user(self):
-        pass
+        data = {
+            "username": "test2",
+            "password": "testpassword",
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEquals(response.status_code, 200)
+        form = response.context["form"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors["__all__"],
+            ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
+        )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_empty_password(self):
-        pass
+        empty_data = {
+            "username": "test2",
+            "password": "",
+        }
+        response = self.client.post(self.url, empty_data)
+        self.assertEquals(response.status_code, 200)
+        form = response.context["form"]
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors["password"],
+            ["このフィールドは必須です。"],
+        )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestLogoutView(TestCase):
-    def test_success_get(self):
-        pass
+    def setUp(self):
+        self.url = User.objects.create_user(
+            username="testuser",
+            password="testpassword",
+        )
+        self.client.login(username="testuser", password="testpassword")
+
+    def test_success_post(self):
+        response = self.client.post(reverse("accounts:logout"))
+        self.assertRedirects(
+            response,
+            reverse(settings.LOGOUT_REDIRECT_URL),
+            status_code=302,
+            target_status_code=200,
+        )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestUserProfileView(TestCase):
