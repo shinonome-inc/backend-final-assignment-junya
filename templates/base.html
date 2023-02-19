@@ -21,7 +21,9 @@
         {% if user.is_authenticated %}
         <a class="navbar-brand" href="{% url 'tweets:home' %}">Home</a>
         <a class="navbar-brand" href="{% url 'accounts:user_profile' user.username %}">user_profile</a>
-        <a class="navbar-brand" href="{% url 'accounts:logout' %}">Logout</a>
+        <a class="navbar-brand" href="{% url 'accounts:logout' %}">logout
+            <form action="{% url 'accounts:logout' %}" method="post"></form>
+        </a>
         {% else %}
         <a class="navbar-brand" href="{% url 'accounts:login' %}">Login</a>
         <a class="navbar-brand" href="{% url 'accounts:signup' %}">Sign up</a>
