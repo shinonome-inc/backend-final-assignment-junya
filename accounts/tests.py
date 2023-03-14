@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase
 from django.urls import reverse
+from tweets.models import Tweet
 
 
 class TestSignUpView(TestCase):
@@ -282,8 +283,26 @@ class TestLogoutView(TestCase):
 
 
 class TestUserProfileView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username="testuser1",
+            email="test1@example.com",
+            password="testpassword")
+        self.user2 = User.objects.create_user(
+            username="testuser2",
+            email="test2@example.com",
+            password="testpassword")
+        self.url = reverse("accounts:user_profile", args=[self.user1.username])
+        self.client.force_login(self.user1)
+
     def test_success_get(self):
-        pass
+        Tweet.objects.create(user=self.user1, content="testcontent")
+        Tweet.objects.create(user=self.user2, content="testcontent")
+        response = self.client.get(self.url)
+
+        self.assertQuerysetEqual(
+            response.context["object_list"],
+            Tweet.objects.filter(user=self.user1))
 
 
 class TestUserProfileEditView(TestCase):
