@@ -9,9 +9,7 @@ from .models import Tweet
 class TestHomeView(TestCase):
     def setUp(self):
         self.url = reverse("tweets:home")
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
         self.client.login(username="testuser", password="testpassword")
 
     def test_success_get(self):
@@ -23,9 +21,7 @@ class TestHomeView(TestCase):
 
 class TestTweetCreateView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
         self.url = reverse("tweets:create")
         self.client.login(username="testuser", password="testpassword")
 
@@ -36,9 +32,7 @@ class TestTweetCreateView(TestCase):
     def test_success_post(self):
         test_tweet = {"title": "test", "content": "testtweet"}
         response = self.client.post(self.url, test_tweet)
-        self.assertRedirects(
-            response, reverse("tweets:home"), status_code=302, target_status_code=200
-            )
+        self.assertRedirects(response, reverse("tweets:home"), status_code=302, target_status_code=200)
         self.assertTrue(Tweet.objects.filter(content=test_tweet["content"]).exists())
 
     def test_failure_post_with_empty_content(self):
@@ -65,9 +59,7 @@ class TestTweetCreateView(TestCase):
 
 class TestTweetDetailView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
         self.client.login(username="testuser", password="testpassword")
         self.tweet = Tweet.objects.create(user=self.user, title="test", content="testtweet")
         self.url = reverse("tweets:detail", kwargs={"pk": self.tweet.pk})
@@ -80,12 +72,8 @@ class TestTweetDetailView(TestCase):
 
 class TestTweetDeleteView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
-        )
-        self.user2 = User.objects.create_user(
-            username="testuser2", email="test2@example.com", password="testpassword"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword")
+        self.user2 = User.objects.create_user(username="testuser2", email="test2@example.com", password="testpassword")
         self.client.login(
             username="testuser",
             password="testpassword",

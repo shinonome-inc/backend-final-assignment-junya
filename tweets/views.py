@@ -28,7 +28,7 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
 class TweetCreateView(LoginRequiredMixin, CreateView):
     model = Tweet
     template_name = "tweets/create.html"
-    fields = ['title', 'content']
+    fields = ["title", "content"]
     success_url = reverse_lazy("tweets:home")
 
     def form_valid(self, form):

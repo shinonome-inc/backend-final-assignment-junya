@@ -28,7 +28,7 @@ class TestSignUpView(TestCase):
             reverse(settings.LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
-            )
+        )
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(
             User.objects.filter(username="testuser", email="test@example.com").count(),
@@ -285,14 +285,8 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(
-            username="testuser1",
-            email="test1@example.com",
-            password="testpassword")
-        self.user2 = User.objects.create_user(
-            username="testuser2",
-            email="test2@example.com",
-            password="testpassword")
+        self.user1 = User.objects.create_user(username="testuser1", email="test1@example.com", password="testpassword")
+        self.user2 = User.objects.create_user(username="testuser2", email="test2@example.com", password="testpassword")
         self.url = reverse("accounts:user_profile", args=[self.user1.username])
         self.client.force_login(self.user1)
 
@@ -301,9 +295,7 @@ class TestUserProfileView(TestCase):
         Tweet.objects.create(user=self.user2, content="testcontent")
         response = self.client.get(self.url)
 
-        self.assertQuerysetEqual(
-            response.context["object_list"],
-            Tweet.objects.filter(user=self.user1))
+        self.assertQuerysetEqual(response.context["object_list"], Tweet.objects.filter(user=self.user1))
 
 
 class TestUserProfileEditView(TestCase):
