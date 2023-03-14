@@ -1,8 +1,9 @@
-from accounts.forms import User
 from django.conf import settings
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase
 from django.urls import reverse
+
+from accounts.forms import User
 from tweets.models import Tweet
 
 
