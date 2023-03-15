@@ -8,16 +8,7 @@ from .models import Tweet
 class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = Tweet
-    context_object_name = "tweets"
     queryset = model.objects.select_related("user").order_by("-created_at")
-
-
-class MyPost(LoginRequiredMixin, ListView):
-    model = Tweet
-    template_name = "tweets/home.html"
-
-    def get_queryset(self):
-        return Tweet.objects.filter(user=self.request.user)
 
 
 class TweetDetailView(LoginRequiredMixin, DetailView):

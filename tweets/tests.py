@@ -1,7 +1,6 @@
+from accounts.forms import User
 from django.test import TestCase
 from django.urls import reverse
-
-from accounts.forms import User
 
 from .models import Tweet
 
@@ -14,7 +13,7 @@ class TestHomeView(TestCase):
 
     def test_success_get(self):
         Tweet.objects.create(user=self.user, content="test tweet")
-        response = self.client.get(reverse("tweets:home"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context["object_list"], Tweet.objects.all())
 
@@ -46,7 +45,7 @@ class TestTweetCreateView(TestCase):
 
     def test_failure_post_with_too_long_content(self):
         too_long_tweet = {"content": "n" * 101}
-        response = self.client.post(reverse("tweets:create"), too_long_tweet)
+        response = self.client.post(self.url, too_long_tweet)
         self.assertEqual(response.status_code, 200)
 
         form = response.context["form"]
@@ -85,7 +84,7 @@ class TestTweetDeleteView(TestCase):
 
     def test_success_post(self):
         response = self.client.post(self.url)
-        self.assertRedirects(response, reverse("tweets:home"), status_code=302)
+        self.assertRedirects(response, reverse("tweets:home"), status_code=302, target_status_code=200)
         self.assertEqual(Tweet.objects.filter(content="tweet").count(), 0)
 
     def test_failure_post_with_not_exist_tweet(self):
