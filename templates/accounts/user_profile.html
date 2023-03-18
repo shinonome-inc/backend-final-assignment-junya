@@ -2,10 +2,10 @@
 {% block title %}{% endblock %}
 {% block content %}
 <h2>{{username}}の詳細</h2>
-{% for item in object_list %}
+{% for tweet in tweets %}
 <div class="alert alert-success" role="alert">
-    <p>タイトル：<a href="{% url 'tweets:detail' item.pk %}">{{item.title}}</a></p>
-    <p>投稿者:{{item.user.username}}</p>
+    <p>タイトル：<a href="{% url 'tweets:detail' tweet.pk %}">{{tweet.title}}</a></p>
+    <p>投稿者:{{tweet.user.username}}</p>
 </div>
 {% endfor %}
 <p><a href="{% url 'tweets:home' %}">ホームへ</a></p>

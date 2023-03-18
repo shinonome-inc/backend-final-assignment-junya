@@ -4,9 +4,9 @@
 <h1>detail</h1>
 <div class="container">
     <div class="alert alert-success" role="alert">
-        <p>タイトル:{{object.title}}</p>
-        <p>投稿者:{{object.user}}</p>
-        <p>コメント:{{object.content}}</p>
+        <p>タイトル:{{tweet.title}}</p>
+        <p>投稿者:{{tweet.user}}</p>
+        <p>コメント:{{tweet.content}}</p>
 
         {% if object.user == request.user %}
         <a href="{% url 'tweets:delete' tweet.pk %}" class="btn btn-danger ms-3" tabindex="-1" role="button"
