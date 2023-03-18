@@ -3,7 +3,7 @@
 {% block content %}
 <h2>{{username}}の詳細</h2>
 {% for tweet in tweets %}
-{% include 'tweet.html' with tweet=tweet %}
+{% include 'tweets/tweet.html' with tweet=tweet %}
 {% endfor %}
 <p><a href="{% url 'tweets:home' %}">ホームへ</a></p>
 {% endblock %}
