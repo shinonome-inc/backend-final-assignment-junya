@@ -5,11 +5,7 @@
 <div class="container mt-3">
     <a href="{% url 'tweets:create' %}"><button type="button" class="btn btn-outline-primary">tweet</button></a>
     {% for tweet in tweets %}
-    <div class="alert alert-success" role="alert">
-        <p>投稿者:<a href="{% url 'accounts:user_profile' tweet.user.username %}">{{tweet.user.username}}</a></p>
-        <p>タイトル：<a href="{% url 'tweets:detail' tweet.pk %}">{{tweet.title}}</a></p>
-        <p>コメント:{{tweet.content}}</p>
-    </div>
+    {% include 'tweet.html' with tweet=tweet %}
     {% endfor %}
 </div>
 {% endblock %}
