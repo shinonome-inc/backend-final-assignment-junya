@@ -9,16 +9,12 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = Tweet
     queryset = model.objects.select_related("user").order_by("-created_at")
+    context_object_name = "tweets"
 
 
 class TweetDetailView(LoginRequiredMixin, DetailView):
     template_name = "tweets/detail.html"
     model = Tweet
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        print(context)
-        return context
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
