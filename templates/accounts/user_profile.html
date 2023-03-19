@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{% endblock %}
 {% block content %}
-<h2>{{object.username}}</h2>
+<h2>{{username}}の詳細</h2>
+{% for tweet in tweets %}
+{% include 'tweets/tweet.html' with tweet=tweet %}
+{% endfor %}
 <p><a href="{% url 'tweets:home' %}">ホームへ</a></p>
 {% endblock %}

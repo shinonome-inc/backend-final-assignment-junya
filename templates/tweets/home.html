@@ -2,4 +2,10 @@
 {% block title %}ホーム{% endblock %}
 {% block content %}
 <h1>ホーム</h1>
+<div class="container mt-3">
+    <a href="{% url 'tweets:create' %}"><button type="button" class="btn btn-outline-primary">tweet</button></a>
+    {% for tweet in tweets %}
+    {% include 'tweets/tweet.html' with tweet=tweet %}
+    {% endfor %}
+</div>
 {% endblock %}

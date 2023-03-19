@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}削除{% endblock %}
+{% block content %}
+{% if tweet.user == request.user %}
+<form method="post">{% csrf_token %}
+    <p>本当に削除してもよろしいですか</p>
+    <input type="submit" value="削除する">
+</form>
+{% endif %}
+{% endblock %}
