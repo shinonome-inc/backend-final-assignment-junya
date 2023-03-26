@@ -376,20 +376,24 @@ class TestUnfollowView(TestCase):
 class TestFollowingListView(TestCase):
     def test_success_get(self):
         self.user1 = User.objects.create_user(username="testuser1", password="testpassword")
-        self.client.login(
-            username="testuser1",
-            password="testpassword",
-        )
+        self.user2 = User.objects.create_user(username="testuser2", password="testpassword")
+        self.friendship1 = FriendShip.objects.create(following=self.user2, follower=self.user1)
+        self.friendship2 = FriendShip.objects.create(following=self.user1, follower=self.user2)
+        self.client.login(username="testuser1", password="testpassword")
         response = self.client.get(reverse("accounts:following_list", kwargs={"username": "testuser1"}))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["following_list"]), 1)
+        self.assertEqual(response.context["following_list"][0], self.friendship1)
 
 
 class TestFollowerListView(TestCase):
     def test_success_get(self):
         self.user1 = User.objects.create_user(username="testuser1", password="testpassword")
-        self.client.login(
-            username="testuser1",
-            password="testpassword",
-        )
+        self.user2 = User.objects.create_user(username="testuser2", password="testpassword")
+        self.friendship1 = FriendShip.objects.create(following=self.user2, follower=self.user1)
+        self.friendship2 = FriendShip.objects.create(following=self.user1, follower=self.user2)
+        self.client.login(username="testuser1", password="testpassword")
         response = self.client.get(reverse("accounts:follower_list", kwargs={"username": "testuser1"}))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["follower_list"]), 1)
+        self.assertEqual(response.context["follower_list"][0], self.friendship2)

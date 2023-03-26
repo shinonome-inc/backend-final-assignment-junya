@@ -51,7 +51,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
         return Tweet.objects.select_related("user").filter(user=user)
 
     def get_context_data(self, **kwargs):
-        user = get_object_or_404(User, username=self.kwargs["username"])
+        user = self.request.user
         context = super().get_context_data(**kwargs)
         context["user"] = user
         context["is_following"] = FriendShip.objects.filter(follower=self.request.user, following=user)
@@ -69,7 +69,7 @@ class FollowView(LoginRequiredMixin, RedirectView):
         if target_user == self.request.user:
             messages.add_message(request, messages.ERROR, "自分自身をフォローすることはできません。")
             return HttpResponseBadRequest("you cannnot follow yourself.")
-        elif self.request.user.following.filter(following__username=target_user.username).exists():
+        if self.request.user.following.filter(following__username=target_user.username).exists():
             messages.add_message(request, messages.INFO, "既にフォローしています。")
         else:
             FriendShip.objects.create(follower=request.user, following=target_user)
@@ -85,7 +85,7 @@ class UnFollowView(LoginRequiredMixin, RedirectView):
         if target_user == self.request.user:
             messages.add_message(request, messages.ERROR, "自分自身にその操作をすることはできません。")
             return HttpResponseBadRequest("you cannnot unfollow yourself.")
-        elif FriendShip.objects.filter(following=target_user).filter(follower=self.request.user).exists():
+        if FriendShip.objects.filter(following=target_user).filter(follower=self.request.user).exists():
             target_friend_obj = get_object_or_404(FriendShip, following=target_user, follower=self.request.user)
             target_friend_obj.delete()
             messages.add_message(request, messages.SUCCESS, "フォロー解除しました。")
