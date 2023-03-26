@@ -51,9 +51,9 @@ class UserProfileView(LoginRequiredMixin, ListView):
         return Tweet.objects.select_related("user").filter(user=user)
 
     def get_context_data(self, **kwargs):
-        user = self.request.user
+        user = get_object_or_404(User, username=self.kwargs["username"])
         context = super().get_context_data(**kwargs)
-        context["user"] = user
+        context["user"] = get_object_or_404(User, username=self.kwargs["username"])
         context["is_following"] = FriendShip.objects.filter(follower=self.request.user, following=user)
         context["following_count"] = FriendShip.objects.filter(follower=user).count()
         context["follower_count"] = FriendShip.objects.filter(following=user).count()
@@ -105,6 +105,11 @@ class FollowingListView(LoginRequiredMixin, ListView):
         )
         return target_user.follower.order_by("-created_at")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = get_object_or_404(User, username=self.kwargs["username"])
+        return context
+
 
 class FollowerListView(LoginRequiredMixin, ListView):
     template_name = "accounts/follower_list.html"
@@ -116,3 +121,8 @@ class FollowerListView(LoginRequiredMixin, ListView):
             username=self.kwargs.get("username"),
         )
         return target_user.following.order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = get_object_or_404(User, username=self.kwargs["username"])
+        return context

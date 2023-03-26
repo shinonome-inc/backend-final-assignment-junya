@@ -7,7 +7,7 @@
     {% for follow in follower_list %}
     <p><a href="{% url 'accounts:user_profile' follow.follower.username %}">{{ follow.follower.username }}</a></p>
     {% empty %}
-    <p>{{ user.username }}はまだ誰もフォローしていません。</p>
+    <p>{{ user.username }}はまだ誰からもフォローされていません。</p>
     {% endfor %}
 </div>
 
