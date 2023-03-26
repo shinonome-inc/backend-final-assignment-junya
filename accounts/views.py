@@ -7,6 +7,7 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, RedirectView
+
 from tweets.models import Tweet
 
 from .forms import SignupForm
