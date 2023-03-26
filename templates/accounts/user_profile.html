@@ -1,7 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}{% endblock %}
 {% block content %}
-<h2>{{username}}の詳細</h2>
+<h2>{{user.username}}の詳細</h2>
+{% if user.username != request.user.username %}
+<form method="POST">
+    {% csrf_token %}
+    {% if is_following %}
+    <button type="submit" formaction="{% url 'accounts:unfollow' user.username %}">フォロー解除</button>
+    {% else %}
+    <button type="submit" formaction="{% url 'accounts:follow' user.username %}">フォロー</button>
+    {% endif %}
+</form>
+{% endif %}
+<div>
+    <br>
+    <a href="{% url 'accounts:following_list' user.username %}">フォロー数：{{ following_count }}</a>
+    <br>
+    <a href="{% url 'accounts:follower_list' user.username %}">フォロワー数：{{ follower_count }}</a>
+</div>
 {% for tweet in tweets %}
 {% include 'tweets/tweet.html' with tweet=tweet %}
 {% endfor %}
