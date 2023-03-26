@@ -7,7 +7,6 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, RedirectView
-
 from tweets.models import Tweet
 
 from .forms import SignupForm
@@ -53,7 +52,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         user = get_object_or_404(User, username=self.kwargs["username"])
         context = super().get_context_data(**kwargs)
-        context["user"] = get_object_or_404(User, username=self.kwargs["username"])
+        context["user"] = user
         context["is_following"] = FriendShip.objects.filter(follower=self.request.user, following=user)
         context["following_count"] = FriendShip.objects.filter(follower=user).count()
         context["follower_count"] = FriendShip.objects.filter(following=user).count()
