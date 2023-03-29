@@ -100,15 +100,15 @@ class FollowingListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         target_user = get_object_or_404(
-            User.objects.prefetch_related("follower"),
+            User,
             username=self.kwargs.get("username"),
         )
-        return target_user.follower.order_by("-created_at")
+        return target_user.follower.select_related("following").order_by("-created_at")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user"] = get_object_or_404(
-            User.objects.prefetch_related("follower"),
+            User,
             username=self.kwargs["username"],
         )
         return context
@@ -120,15 +120,15 @@ class FollowerListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         target_user = get_object_or_404(
-            User.objects.prefetch_related("following"),
+            User,
             username=self.kwargs.get("username"),
         )
-        return target_user.following.order_by("-created_at")
+        return target_user.following.select_related("follower").order_by("-created_at")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user"] = get_object_or_404(
-            User.objects.prefetch_related("following"),
+            User,
             username=self.kwargs["username"],
         )
         return context
