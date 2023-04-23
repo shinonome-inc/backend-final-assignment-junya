@@ -28,9 +28,8 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["liked_list"] = Like.objects.filter(tweet=self.object, user=self.request.user).values_list(
-            "tweet", flat=True
-        )
+        liked_list = Like.objects.filter(tweet=self.object, user=self.request.user).values_list("tweet", flat=True)
+        context["liked_list"] = Tweet.objects.filter(id__in=liked_list)
         return context
 
 
