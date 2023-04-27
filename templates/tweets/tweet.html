@@ -1,5 +1,5 @@
 <div class="alert alert-success" role="alert">
-    {% include "tweets/like_javas.html" %}
+    {% include "tweets/like_js.html" %}
     <p>投稿者:<a href="{% url 'accounts:user_profile' tweet.user.username %}">{{tweet.user.username}}</a></p>
     <p>タイトル：<a href="{% url 'tweets:detail' tweet.pk %}">{{tweet.title}}</a></p>
     <p>コメント:{{tweet.content}}</p>

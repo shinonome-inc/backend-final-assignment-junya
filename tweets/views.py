@@ -25,10 +25,15 @@ class HomeView(LoginRequiredMixin, ListView):
 class TweetDetailView(LoginRequiredMixin, DetailView):
     template_name = "tweets/detail.html"
     model = Tweet
+    queryset = Tweet.objects.select_related("user")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        liked_list = Like.objects.filter(tweet=self.object, user=self.request.user).values_list("tweet", flat=True)
+        liked_list = (
+            Like.objects.filter(tweet=self.object, user=self.request.user)
+            .prefetch_related("user")
+            .values_list("tweet", flat=True)
+        )
         context["liked_list"] = liked_list
         return context
 
@@ -59,6 +64,7 @@ class LikeView(LoginRequiredMixin, View):
         tweet = get_object_or_404(Tweet, id=tweet_id)
         Like.objects.get_or_create(tweet=tweet, user=self.request.user)
         unlike_url = reverse("tweets:unlike", kwargs={"pk": tweet_id})
+        tweet = Tweet.objects.prefetch_related("liked_tweet").get(id=tweet_id)
         like_count = tweet.liked_tweet.count()
         is_liked = True
         context = {
@@ -78,6 +84,7 @@ class UnlikeView(LoginRequiredMixin, View):
             like.delete()
         is_liked = False
         like_url = reverse("tweets:like", kwargs={"pk": tweet_id})
+        tweet = Tweet.objects.prefetch_related("liked_tweet").get(id=tweet_id)
         like_count = tweet.liked_tweet.count()
         context = {
             "like_count": like_count,

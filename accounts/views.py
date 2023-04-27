@@ -48,19 +48,23 @@ class UserProfileView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs["username"])
-        return Tweet.objects.select_related("user").filter(user=user)
-
-    def get_context_data(self, **kwargs):
-        user = get_object_or_404(User, username=self.kwargs["username"])
-        context = super().get_context_data(**kwargs)
-        context["user"] = user
-        context["is_following"] = FriendShip.objects.filter(follower=self.request.user, following=user)
-        context["following_count"] = FriendShip.objects.filter(follower=user).count()
-        context["follower_count"] = FriendShip.objects.filter(following=user).count()
-        context["liked_list"] = (
-            Like.objects.select_related("tweet").filter(user=self.request.user).values_list("tweet", flat=True)
+        self.user = user
+        return (
+            Tweet.objects.select_related("user")
+            .prefetch_related("liked_tweet")
+            .filter(user__username=self.kwargs.get("username"))
+            .order_by("-created_at")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.user
+        context["is_following"] = FriendShip.objects.filter(follower=self.request.user, following=self.user)
+        context["following_count"] = FriendShip.objects.filter(follower=self.user).count()
+        context["follower_count"] = FriendShip.objects.filter(following=self.user).count()
+        context["liked_list"] = (
+            Like.objects.prefetch_related("tweet").filter(user=self.request.user).values_list("tweet", flat=True)
+        )
         return context
 
 
@@ -110,10 +114,7 @@ class FollowingListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user"] = get_object_or_404(
-            User,
-            username=self.kwargs["username"],
-        )
+        context["user"] = self.object_list.first().following
         return context
 
 
@@ -130,8 +131,5 @@ class FollowerListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user"] = get_object_or_404(
-            User,
-            username=self.kwargs["username"],
-        )
+        context["user"] = self.object_list.first().follower
         return context

@@ -2,7 +2,7 @@
 {% block title %}ホーム{% endblock %}
 {% block content %}
 <h1>ホーム</h1>
-{% include "tweets/like_javas.html" %}
+{% include "tweets/like_js.html" %}
 <div class="container mt-3">
     <a href="{% url 'tweets:create' %}"><button type="button" class="btn btn-outline-primary">tweet</button></a>
     {% for tweet in tweets %}
